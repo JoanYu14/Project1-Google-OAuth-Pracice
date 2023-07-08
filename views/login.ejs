@@ -29,6 +29,9 @@
       <h5>已經註冊過一個帳戶？您可以在此登錄：</h5>
       <!-- 送出這個form就是對localhost:8080/auth/login寄出一個POST Request -->
       <form action="/auth/login" method="POST">
+        <!-- 這個嵌入的ejs檔，如果是直接進入這個頁面是不會有任何element的，要有經過route處理過重新導向這個頁面的才會有element -->
+        <!-- 因為這個message.ejs裡面有判斷幾個flash是不是空字串，是的話就不會有任何element，而幾個flash的key所對應的值是在其他route裡才會賦予的 -->
+        <%- include ("partials/message") %>
         <div class="form-group">
           <label for="exampleInputEmail1">信箱地址：</label>
           <input

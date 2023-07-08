@@ -8,6 +8,8 @@
     <%- include ("partials/nav") %>
     <main style="padding: 3rem">
       <form action="/auth/signup" method="POST">
+        <!-- 這個嵌入的ejs檔，如果是直接進入這個頁面(例如首頁點擊註冊會員或輸入URL)是不會有任何element的，要有經過route處理過重新導向這個頁面的才會有element -->
+        <!-- 因為這個message.ejs裡面有判斷幾個flash是不是空字串，是的話就不會有任何element，而幾個flash的key所對應的值是在其他route裡才會賦予的 -->
         <%- include ("partials/message") %>
         <div class="form-group">
           <label for="exampleUsername">姓名：</label>
@@ -17,7 +19,7 @@
             class="form-control"
             id="exampleUsername"
             required
-            minlength="6"
+            minlength="3"
             maxlength="255"
           />
           <small class="form-text text-muted">請輸入您的全名。</small>
@@ -44,8 +46,8 @@
             type="password"
             class="form-control"
             id="exampleInputPassword1"
-            minlength="8"
             maxlength="1024"
+            minlength="8"
             name="password"
             required
           />

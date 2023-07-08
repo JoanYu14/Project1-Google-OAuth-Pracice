@@ -2,6 +2,8 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport"); // 得到一個物件
+const User = require("../models/user-models");
+const bcrypt = require("bcrypt"); // 要用bcrypt套件提供的功能來對密碼做bcrypt雜湊函式(鹽巴的部分套件會幫我們隨機選擇)
 
 router.get("/login", (req, res) => {
   res.render("login", { user: req.user });
@@ -19,6 +21,51 @@ router.get("/logout", (req, res) => {
   });
 });
 
+// ========================================================================================================
+// 製作註冊本地會員
+router.get("/signup", (req, res) => {
+  return res.render("signup", { user: req.user }); // 讓signup可以根據user來判斷使用者的登入狀態
+});
+
+router.post("/signup", async (req, res) => {
+  try {
+    let { name, email, password } = req.body;
+
+    // 確認密碼長度
+    // 這裡雖然再signup.ejs的input標籤中有設定minlength
+    // 但是如果客戶不是用頁面來填寫資料而是用例如postman寄出post request的話就不受8個字的限制了，因此這裡還需判斷
+    if (password.length < 8) {
+      // 設定key為error_msg的flash的值為第二個參數
+      req.flash("error_msg", "密碼長度過短，至少需要8個數字或英文字");
+      // 把客戶導回/auth/signup這個route，且此時req.flash("error_msg")就有值了
+      return res.redirect("/auth/signup");
+    }
+
+    // 確認信箱是否被註冊過了
+    const foundEmail = await User.findOne({ email }).exec();
+    if (foundEmail) {
+      // 如果有找到這個document
+      req.flash(
+        "error_msg",
+        "此信箱已經被註冊過了。請使用別的信箱，或使用此信箱登入系統"
+      );
+      return res.redirect("/auth/signup");
+    }
+
+    // 以上都沒問題就可以把資料存入mongoDB中
+    // 要先對password做brycpt雜湊函式，salt round設定12(此值越大，雜湊運算所需時間越久)
+    let hashPassword = await bcrypt.hash(password, 12);
+    // 把User這個model當成constructor來製作一個新物件(document)
+    let newUser = new User({ name, email, password: hashPassword });
+    // 將newUser存入users這個collection中，因為await關鍵字，所以這整個異步函式會停在這裡直到.save()執行完畢
+    await newUser.save();
+    req.flash("success_msg", "恭喜註冊成功!現在可以登入系統了!");
+    return res.redirect("/auth/login");
+  } catch (e) {}
+});
+
+// ========================================================================================================
+// 製作Google登入
 router.get(
   "/google",
   // 用以驗證使用者。可設定要採用的 Strategy、驗證成功與失敗導向的頁面。Google的Strategy設定在config資料夾的passport.js這個檔案內

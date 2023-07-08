@@ -11,6 +11,7 @@ const profileRoutes = require("./routes/profile-routes");
 require("./config/passport"); // 會自動執行passport.js的程式碼，因為檔案的所有程式碼被包在一個Function Expression內，這個function就是Module Wrapper，並且會被立即執行，就是IIFE
 const session = require("express-session");
 const passport = require("passport");
+const flash = require("connect-flash");
 
 // 連接到本機的MongoDB的exampleDB這個database
 mongoose
@@ -50,9 +51,19 @@ app.use(passport.initialize());
 // 用以處理 Session。若有找到 passport.user，則判定其通過驗證，並呼叫 deserializeUser()。
 app.use(passport.session());
 
+app.use(flash());
+
 app.use((req, res, next) => {
-  console.log(req.session);
-  console.log(req.user);
+  // res.locals
+  // 僅作用於該 request - response 的物件，因此只能在該 request-response 所轉譯的頁面取得
+  // 所以不用在render的時候在另外給值，那個render的頁面能自動找到res.locals裡面的屬性
+
+  // 讓Request寄來的時候就先設定這些資料在送到route中
+  // 設定res.locals的這三個屬性為req.flash這三個key所對應的值(key所對應的value會再auth-routes的router裡面設定)
+  // 並不是所有flash的key都會有對應的值，沒有的話就會是空字串
+  res.locals.success_msg = req.flash("success_msg");
+  res.locals.error_msg = req.flash("error_msg");
+  res.locals.error = req.flash("error");
   next();
 });
 

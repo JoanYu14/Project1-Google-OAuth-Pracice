@@ -1,3 +1,6 @@
+<!-- error、error_msg、success_msg都是在request剛送到伺服器時就經過自己創建的middleware來增加的res.locals -->
+<!-- 這三個其實是對到三個flash所對應的key的值，而這三個key並不是所有值都會有對應的值，這是由route去設定的，所以沒有的話就是空字串 -->
+
 <% if (error != "") { %>
 <div class="alert alert-warning alert-dismissible fade show" role="alert">
   <strong><%= error %></strong>
