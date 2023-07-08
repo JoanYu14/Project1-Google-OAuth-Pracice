@@ -6,7 +6,7 @@ const GoogleStrategy = require("passport-google-oauth20"); // 取得一個functi
 
 const User = require("../models/user-models"); // 取得與users這個collection連接的model
 
-// == 執行順序6 ==
+// == 執行順序5 ==
 // GoogleStratagy的第二個參數(函式)的第四個參數(done)被執行時，就會執行這個函式
 // 可設定要將哪些 user 資訊，儲存在 Session 中的 passport.user。（如 user._id）
 passport.serializeUser((user, done) => {
@@ -19,7 +19,7 @@ passport.serializeUser((user, done) => {
   // 設定req.isAuthenticated()為true，代表已經驗證這個使用者
 });
 
-// == 執行順序8 ==
+// == 執行順序7 ==
 // serializeUser完成後，Passport會執行callback URL的route。進入此route之後，Passport會執行deserializeUser()。
 // 可藉由從 Session 中獲得的資訊去撈該 user 的資料。
 passport.deserializeUser(async (_id, done) => {
@@ -45,7 +45,7 @@ passport.use(
       // ID與Secret都是.env內定義的環境變數
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      // == 執行順序7 ==
+      // == 執行順序6 ==
       // serializeUser完成後，Passport會執行callback URL的route
       callbackURL: "http://localhost:8080/auth/google/redirect", // 如果所有驗證都完成了就把客戶導到這個route
     },
@@ -57,8 +57,6 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         console.log("進入Google Strategy的區域");
-        console.log(profile);
-        console.log("========================");
 
         // 去尋找users這個collection中是否有googleID為profile.id的document
         // 因為await所以會return執行的結果，有的話就是那個document，沒有的話就是null
@@ -66,7 +64,7 @@ passport.use(
         if (foundUser) {
           console.log("使用者已經註冊過了，無須存入資料庫內");
 
-          // == 執行順序5 ==
+          // == 執行順序4 ==
           // done被呼叫時passport會透過express-session套件去執行passport.serializeUser()
           // foundUserUser會帶入passport.serializeUser(uesr,done)的user這個參數內
           done(null, foundUser);
@@ -85,7 +83,7 @@ passport.use(
           console.log(saveUser);
           console.log("成功創建新用戶");
 
-          // == 執行順序5 ==
+          // == 執行順序4 ==
           // done被呼叫時passport會透過express-session套件去執行passport.serializeUser()
           // saveUser會帶入passport.serializeUser(uesr,done)的user這個參數內
           done(null, saveUser);

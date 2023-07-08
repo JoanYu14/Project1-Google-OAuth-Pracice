@@ -4,7 +4,19 @@ const router = express.Router();
 const passport = require("passport"); // 得到一個物件
 
 router.get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", { user: req.user });
+});
+
+// req.logOut()可以用來登出使用者，passport會自動刪除session
+// 參數要放一個function，callbackFn的參數事如果發生錯誤的話就會帶入，沒有的話就不會帶入東西
+router.get("/logout", (req, res) => {
+  req.logOut((err) => {
+    if (err) {
+      return res.send(err); //
+    } else {
+      return res.redirect("/");
+    }
+  });
 });
 
 router.get(

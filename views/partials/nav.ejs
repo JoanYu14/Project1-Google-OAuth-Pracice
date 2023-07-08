@@ -16,6 +16,8 @@
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="/">首頁</a></li>
 
+        <!-- 用if來判斷如果沒有user的話代表沒有登入，那就要給這兩個li標籤，如果有的話代表有登入，那就不要有這兩個標籤 -->
+        <% if(!user){ %>
         <li class="nav-item">
           <a class="nav-link" href="/auth/login">會員登入</a>
         </li>
@@ -23,7 +25,11 @@
         <li class="nav-item">
           <a class="nav-link" href="/auth/signup">註冊會員</a>
         </li>
+        <% } %>
 
+        <!-- 用if來判斷如果有user的話代表有登入，那就要給這三個li標籤，如果沒有的話代表沒有登入，那就不要有這兩個標籤 -->
+        <!-- 因為這三個標籤的a標籤所指向的route的功能都應該是要有登入才能使用的 -->
+        <% if(user){ %>
         <li class="nav-item">
           <a class="nav-link" href="/auth/logout">登出系統</a>
         </li>
@@ -33,6 +39,7 @@
         <li class="nav-item">
           <a class="nav-link" href="/profile/post">製作新的Post</a>
         </li>
+        <% } %>
       </ul>
     </div>
   </div>

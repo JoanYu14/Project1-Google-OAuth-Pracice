@@ -44,7 +44,7 @@ app.use(
 );
 
 // 讓passport運行認證功能
-// 確認 passport.user 是否已存在，若沒有則初始化一個空的。
+// 在 middleware 中透過 passport.initialize() 來初始化 Passport
 app.use(passport.initialize());
 
 // 用以處理 Session。若有找到 passport.user，則判定其通過驗證，並呼叫 deserializeUser()。
@@ -65,7 +65,7 @@ app.use("/profile", profileRoutes);
 // Routes
 
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("index", { user: req.user }); // 有登入過的客戶端寄來的Request就會有req.user，沒登入的就沒有
 });
 
 app.listen(8080, () => {
