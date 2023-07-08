@@ -33,5 +33,19 @@
         <li>時間為：<%= user.date %></li>
       </ul>
     </section>
+
+    <section class="posts">
+      <!-- posts會是一個陣列，posts為空陣列的話代表這個user沒有製作過任何post，所以Post.find()才會return空陣列 -->
+      <!-- 如果是空陣列的話，post.length就會=0，讓這個for loop就不會執行了 -->
+      <% for (let i = 0; i < posts.length; i++){ %>
+      <div class="card" style="width: 18rem; margin: 1rem">
+        <div class="card-body">
+          <h5 class="card-title"><%= posts[i].title %></h5>
+          <p class="card-text"><%- posts[i].content %></p>
+          <a href="#" class="btn btn-primary"><%= posts[i].date %> </a>
+        </div>
+      </div>
+      <%}%>
+    </section>
   </body>
 </html>
