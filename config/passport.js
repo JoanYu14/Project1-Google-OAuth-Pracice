@@ -2,7 +2,9 @@
 // 把跟Strategies有關的內容放進來，例如Google Strategy(Google的登入策略)
 // 下面寫的執行順序是指OAuth開始後這些程式碼的執行順序，不是全部都照程式碼寫的順序執行的
 const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20"); // 取得一個function
+const GoogleStrategy = require("passport-google-oauth20"); // 取得一個function，可以用來當constructor製作google strategy
+const LocalStrategy = require("passport-local"); // 取得一個function，可以用來當constructor製作local strategy
+const bcrypt = require("bcrypt"); // 因為本地會員的密碼有經過bcrypt雜湊運算
 
 const User = require("../models/user-models"); // 取得與users這個collection連接的model
 
@@ -93,4 +95,27 @@ passport.use(
       }
     }
   )
+);
+
+// ============================================================================================
+// 設定Local Strategy驗證本地登入
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    let foundUser = await User.findOne({ email: username });
+
+    // 判斷是否有這個符合這個信箱的document存在
+    if (foundUser) {
+      let result = await bcrypt.compare(password, foundUser.password); // bcrypt.compare會去驗證password做雜湊得到的值與foundUser.password這個雜湊值是否相同，所以return一個boolean
+      console.log(result);
+      if (result) {
+        // 如果result為true代表帳號與密碼都對，就執行done，這樣就會把foundUser帶入到passport.serializeUser((user, done)=>{})的user參數內
+        // 所以會去執行上面的passport.serializeUser()與passport.deserializeUser()
+        done(null, foundUser);
+      } else {
+        done(null, false); // 如果result不為true的話就代表有這個信箱但密碼錯誤
+      }
+    } else {
+      done(null, false); // 在done中只要第二個參數設定為false代表沒有被這個LocalStrategy驗證成功
+    }
+  })
 );

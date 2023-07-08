@@ -64,6 +64,22 @@ router.post("/signup", async (req, res) => {
   } catch (e) {}
 });
 
+// 製作本地登入會員
+// 傳到/auth/login這個route的時候就會經過passport.authenticate()這個middleware，第一個參數"local”代表要用Local Strategy驗證。
+// 使用Local Strategy有一個特別的地方是，要post到有使用passport.authenticate(”local”)的route，那個會post到這個route的form(login.ejs)，他的密碼的input的name一定要叫password，帳號的input的name一定要叫username，這樣username與password才能直接套到設定的new LocalStrategy(username,password,done)的參數內
+router.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/auth/login", // 如果驗證失敗的話要把客戶導到/auth/login這個route
+    failureFlash: "登入失敗，帳號或密碼不正確", // 如果驗證失敗的話要給的flash訊息，這個flash會被自動套入app.js的req.flash("err")的值
+  }),
+  (req, res) => {
+    // 如果passport.authenticate("local")成功的話就會執行這個function
+    // 把客戶導到/profile的route
+    return res.redirect("/profile");
+  }
+);
+
 // ========================================================================================================
 // 製作Google登入
 router.get(
