@@ -8,3 +8,5 @@
 - 使用 Passport.js 驗證 Google 帳號登入與本地會員登入
 - 使用 EJS 將取得資料嵌入 HTML 頁面
 - 利用 Bootstrap 套入樣式
+![網站圖片1](/image1.jpg)
+![網站圖片2](/image2.jpg)
